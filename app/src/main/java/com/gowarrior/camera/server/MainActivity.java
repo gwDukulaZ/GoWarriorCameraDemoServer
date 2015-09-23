@@ -126,9 +126,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private Handler mSnapshotHandle = null;
     private boolean allReady = false;
     private CWSPipeClient mCWSPipeClient;
-    private String PIPE_IN = "pipe_out";
-    private String PIPE_OUT = "pipe_in";
-    private String PIPE_ID = "pipe_server";
 
     private Mat mRgba;
     private Mat mGray;
@@ -442,12 +439,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         myCameraPreview.setCvCameraViewListener(this);
 
         //TODO
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                createCWSPipe();
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                createCWSPipe();
+            }
+        }).start();
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -665,7 +662,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         ICWSPipeToken token;
         //TODO
 //        Log.v(TAG, "Pipe Client, server=" + Constants.PIPE_SERVER + " id=" + Constants.Prefix + PIPE_ID);
-//        mCWSPipeClient = new CWSPipeClient(this, Constants.PIPE_SERVER, Constants.Prefix + PIPE_ID);
+        mCWSPipeClient = new CWSPipeClient(this);
 
         CWSPipeCallback cb = new CWSPipeCallback() {
 
@@ -729,38 +726,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
     }
 
-    private void subPipeTopic(String topic) {
-        CWSPipeActionListener listener = new CWSPipeActionListener() {
-            @Override
-            public void onActionSuccess(ICWSPipeToken icwsPipeToken) {
-                Log.d(TAG, "subscribe onActionSuccess");
-            }
-
-            @Override
-            public void onActionFailure(ICWSPipeToken icwsPipeToken, Throwable throwable) {
-                Log.d(TAG, "subscribe onActionFailure");
-            }
-        };
-
-        mCWSPipeClient.subscribe(topic, 2, this, listener);
+    private void subPipeTopic() {
+        mCWSPipeClient.subscribe();
     }
 
-    private void pubPipeTopic(String topic, String payload) {
+    private void pubPipeTopic(String payload) {
         CWSPipeMessage msg = new CWSPipeMessage(payload.getBytes());
-        CWSPipeActionListener listener = new CWSPipeActionListener() {
-            @Override
-            public void onActionSuccess(ICWSPipeToken icwsPipeToken) {
-                Log.d(TAG, "publish onActionSuccess");
-            }
-
-            @Override
-            public void onActionFailure(ICWSPipeToken icwsPipeToken, Throwable throwable) {
-                Log.d(TAG, "publish onActionFailure");
-            }
-        };
-
         msg.setQos(2);
-        mCWSPipeClient.publish(topic, msg, this, listener);
+        mCWSPipeClient.publish(msg);
     }
 
     private void checkDir(String path) {
@@ -1086,7 +1059,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                                 e.printStackTrace();
                             }
                             //TODO
-                            //subPipeTopic(Constants.Prefix + PIPE_IN);
+                            subPipeTopic();
                             break;
                         default:
                             break;
@@ -1152,7 +1125,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private void replyRemoter(String msg) {
         Log.v(TAG, "reply to remoter: " + msg);
         //TODO
-        //pubPipeTopic(Constants.Prefix + PIPE_OUT, msg);
+        pubPipeTopic(msg);
     }
 
 

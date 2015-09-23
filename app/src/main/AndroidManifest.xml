@@ -36,10 +36,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".network.NetworkService"
-            android:exported="false" />
-
         <activity
             android:name=".QCCode"
             android:label="@string/title_activity_qccode" >
@@ -50,16 +46,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <!-- Mqtt Service -->
-        <service
-            android:name="com.gowarrior.cloudq.pipe.MqttService"
-            android:enabled="true"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="com.gowarrior.cloudq.pipe.MqttService" />
-            </intent-filter>
-        </service>
 
     </application>
 
