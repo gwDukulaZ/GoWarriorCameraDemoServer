@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GoWarriorCamera</string>
+    <string name="downloadphoneapp">Download Phone App</string>
+    <string name="resume">Resume</string>
+    <string name="refresh">Refresh</string>
+    <string name="refreshing">Refreshing..</string>
+    <string name="canceled">Canceled</string>
+    <string name="finished">Finished</string>
+    <string name="size">Size</string>
+    <string name="key">Key</string>
+    <string name="nothing_found_to_open_file">
+        There\'s nothing that can open this type of file
+    </string>
+    <string name="files_to_be_uploaded">Files to be uploaded:</string>
+    <string name="transfers">Transfers:</string>
+    <string name="open">Open</string>
+    <string name="snapshot">SnapShot</string>
+    <string name="inputmailhere">Input Your Mail Here</string>
+    <string name="setautorun">AutoRun</string>
+    <string name="disablesetautorun">DisableAutoRun</string>
+    <string name="enablesetautorun">EnableAutoRun</string>
+    <string name="disablesetautosnap">DisableAutoSnapShot</string>
+    <string name="enablesetautosnap">EnableAutoSnapShot</string>
+    <string name="disablefacedetect">DisableFaceDetect</string>
+    <string name="enablefacedetect">EnableFaceDetect</string>
+    <string name="disablephotoupload">DisablePhotoUpload</string>
+    <string name="enablephotoupload">EnablePhotoUpload</string>
+    <string name="upload_image">Upload An Image</string>
+    <string name="autoupload">AutoUpload</string>
+    <string name="download">Download</string>
+    <string name="autodownload">Download Snapshot</string>
+    <string name="title_activity_qccode">QCCode</string>
+
+    <string name="hello_world">Please scan the QC-code to download the related phone apk</string>
+    <string name="action_settings">Settings</string>
+</resources>
