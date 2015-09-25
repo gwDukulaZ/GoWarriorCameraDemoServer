@@ -43,6 +43,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.gowarrior.camera.server.models.TransferModel;
 import com.gowarrior.camera.server.utils.CloudTool;
 import com.gowarrior.cloudq.CWSBucket.ICWSBucketAidlInterface;
 import com.gowarrior.cloudq.CWSPipe.CWSPipeCallback;
@@ -92,7 +93,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     private Timer mTimer;
     private LinearLayout mLayout;
-
+    private TransferModel[] mModels = new TransferModel[0];
 
     private MyPreview myCameraPreview = null;
 
@@ -150,6 +151,11 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public static CloudTool cloudTool;
     private ICWSBucketAidlInterface myBucket;
 
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -169,7 +175,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         setContentView(com.gowarrior.camera.server.R.layout.activity_main);
 
-        //new InitCloud().execute();
+
         cloudServiceBind();
 
 
@@ -334,22 +340,22 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
 
         //TODO
-//        TimerTask task = new TimerTask() {
-//            @Override
-//            public void run() {
-//                MainActivity.this.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        syncModels();
-//                        for (int i = 0; i < mLayout.getChildCount(); i++) {
-//                            ((TransferView) mLayout.getChildAt(i)).;
-//                           // ((TransferView) mLayout.getChildAt(i)).setHandle(mSnapshotHandle);
-//                        }
-//                    }
-//                });
-//            }
-//        };
-//        mTimer.schedule(task, 0, REFRESH_DELAY);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        syncModels();
+                        for (int i = 0; i < mLayout.getChildCount(); i++) {
+                            ((TransferView) mLayout.getChildAt(i)).refresh();
+                            ((TransferView) mLayout.getChildAt(i)).setHandle(mSnapshotHandle);
+                        }
+                    }
+                });
+            }
+        };
+        mTimer.schedule(task, 0, REFRESH_DELAY);
 
         TimerTask mIRSensorTask = new TimerTask() {
             @Override
@@ -767,7 +773,10 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Log.v(TAG, "do remote server close");
         mCWSPipeClient.close();
         //TODO
-        cloudServiceUnbind();
+        cloudTool.cloudServiceFinish();
+
+
+
     }
 
     @Override
@@ -903,36 +912,18 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     /* makes sure that we are up to date on the transfers */
     private void syncModels() {
-//        TransferModel[] models = TransferModel.getAllTransfers();
-//        if ((models != null) && (mModels.length != models.length)) {
-//            if (models.length > 20) {
-//                mLayout.removeViewsInLayout(mLayout.getChildCount() - (models.length - mModels.length),
-//                        models.length - mModels.length);
-//            }
-//            // add the transfers we haven't seen yet
-//            for (int i = mModels.length; i < models.length; i++) {
-//                mLayout.addView(new TransferView(this, models[i]), 0);
-//            }
-//            mModels = models;
-//        }
-        //TODO
-
-
-//        try {
-//            if(bucketSC != null) {
-//                List <String> filelist = cloudTool.getCloudFileList();
-//
-//                if(filelist != null) {
-//                    for (String file : filelist) {
-//                        mLayout.addView(new TransferView(this, file));
-//
-//                    }
-//                }
-//
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        TransferModel[] models = TransferModel.getAllTransfers();
+        if ((models != null) && (mModels.length != models.length)) {
+            if (models.length > 20) {
+                mLayout.removeViewsInLayout(mLayout.getChildCount() - (models.length - mModels.length),
+                        models.length - mModels.length);
+            }
+            // add the transfers we haven't seen yet
+            for (int i = mModels.length; i < models.length; i++) {
+                mLayout.addView(new TransferView(this, models[i]), 0);
+            }
+            mModels = models;
+        }
 
     }
 
@@ -1070,6 +1061,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
     }
 
+
+    //TODO
     private class DeleteObject extends AsyncTask<Object, Void, Boolean> {
 
         @Override
@@ -1082,11 +1075,11 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 //            int delnum = delnumatime;
 //            delnumatime = 0;
 //            if (!bdeleteobj || (objnum - lastdeleteidx) < 5) {
-//                prepareTransfer();
+//
 //            } else {
 //                deleteoldobjects(delnum);
 //            }
-            //TODO
+//
             return true;
         }
 
@@ -1140,6 +1133,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             cloudTool.setCloudService(myBucket);
 
             int i =cloudTool.cloudServiceInit();
+            Log.d(TAG,"the value of i is "+ i);
             if (i > 0){
                 allReady = true;
             }
@@ -1148,6 +1142,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+
+            cloudTool.cloudServiceFinish();
             Log.d(TAG, "onServiceDisconnected");
         }
     };
@@ -1199,6 +1195,15 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         explicitIntent.setComponent(component);
         return explicitIntent;
     }
+
+
+
+
+
+
+
+
+
 
 
 

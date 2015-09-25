@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 
+import com.gowarrior.camera.server.models.UploadModel;
+
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by dukula.zhu on 2015/7/25.
@@ -52,6 +56,10 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
     private int mCameraFrameWidth = 0;
     private int mCameraFrameHeight = 0;
     private Handler mHandle = null;
+
+
+    private static ExecutorService mExecutorService = Executors.newFixedThreadPool(10);
+
 
     public static class JavaCameraSizeAccessor implements ListItemAccessor {
 
@@ -554,6 +562,9 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
                         fos.close();
                         newPicture++;
 
+                        Log.d(TAG,"curSnapshotMode is "+ curSnapshotMode);
+                        Log.d(TAG,"bphotoupload is "+ bPhotoUpload);
+
                         if(curSnapshotMode.equalsIgnoreCase("Remote") || bPhotoUpload) {
                             String mvPath = photoFile.getPath().replaceFirst("new", "upload");
                             File newfile = new File(mvPath);
@@ -564,9 +575,11 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
 
 
 
-                            //upload
+                            //jerry upload
 
-                            MainActivity.cloudTool.uploadFile(fileUri);
+                            //int id = MainActivity.cloudTool.uploadFile(fileUri);
+                            upload(fileUri);
+
 
 
                             if (mHandle != null) {
@@ -636,5 +649,14 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
     public void setPhotoUpload(boolean bUpload) {
         bPhotoUpload = bUpload;
     }
+
+
+    public void upload(Uri uri) {
+        UploadModel model = new UploadModel(getContext(), uri);
+        if(null != mExecutorService)
+            mExecutorService.execute(model.getUploadRunnable());
+
+    }
 }
+
 

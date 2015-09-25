@@ -5,8 +5,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.gowarrior.camera.server.Util;
-import com.gowarrior.cloudq.CWSBucketService.ICWSBucketAidlInterface;
-import com.gowarrior.cloudq.CWSBucketService.ICWSBucketCallback;
+import com.gowarrior.cloudq.CWSBucket.ICWSBucketAidlInterface;
+import com.gowarrior.cloudq.CWSBucket.ICWSBucketCallback;
 
 import java.io.File;
 import java.util.List;
@@ -18,19 +18,26 @@ public class CloudTool extends ICWSBucketCallback.Stub {
     private ICWSBucketAidlInterface mCloudService = null;
     private CloudToolListener progressListener;
 
+
     public void setListener(CloudToolListener listener){
         progressListener = listener;
     }
 
     @Override
     public void onNotify(int handle, int id, String type, String object, String state, long bytesCurrent, long bytesTotal) throws RemoteException {
+
+
+        int percent=0;
         if(null != progressListener){
-            int percent=0;
+
             if(0 != bytesTotal) {
                 percent = (int) ((bytesCurrent * 100) / bytesTotal);
             }
+
             progressListener.onProgress(object,state,percent);
         }
+
+
     }
 
     public interface CloudToolListener{
@@ -58,6 +65,18 @@ public class CloudTool extends ICWSBucketCallback.Stub {
             }
         }
         return mHandle;
+    }
+
+
+    public int cloudServiceFinish() {
+        int ret = 0;
+        try {
+            ret = mCloudService.CWSBucketFinish(mHandle);
+        }catch (RemoteException e){
+            e.printStackTrace();
+        }
+
+        return  ret;
     }
 
     int getHandle() {
@@ -129,6 +148,9 @@ public class CloudTool extends ICWSBucketCallback.Stub {
         }
         return id;
     }
+
+
+
 
 
     public void deleteFile(String object) {
