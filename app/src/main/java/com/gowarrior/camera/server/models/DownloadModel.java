@@ -17,7 +17,6 @@ package com.gowarrior.camera.server.models;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 /*
  * Class that encapsulates downloads, handling all the interaction with the
@@ -49,9 +48,7 @@ public class DownloadModel extends TransferModel {
         mFileName = filename;
         mPrecent = percent;
 
-        Log.d(TAG, "downloadonprocess mStatus=" + mStatus);
-        Log.d(TAG,"downloadonprocess filename="+filename);
-        Log.d(TAG,"downloadonprocess percent="+percent);
+
     }
 
 

@@ -106,10 +106,6 @@ public class UploadModel extends TransferModel {
         mStatus = state;
         mFileName = filename;
         mPrecent = percent;
-        Log.d(TAG,"uploadonprocess mStatus="+mStatus);
-        Log.d(TAG,"uploadonprocess filename="+filename);
-        Log.d(TAG,"uploadonprocess percent="+percent);
-
     }
 
 

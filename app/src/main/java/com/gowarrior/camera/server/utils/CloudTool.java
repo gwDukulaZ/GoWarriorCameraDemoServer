@@ -139,7 +139,7 @@ public class CloudTool extends ICWSBucketCallback.Stub {
         int id = -1;
         try {
             Log.d(TAG, "++Upload++ " + uri);
-            String key = new String();
+            String key = "";
             id = mCloudService.CWSBucketUpload(mHandle, uri, key);
             Log.v(TAG, "CWSBucketUpload return id=" + id + " ,key=" + key);
         } catch (RemoteException e) {
@@ -189,6 +189,7 @@ public class CloudTool extends ICWSBucketCallback.Stub {
 
         for (int i = 0; i < list.size(); i++) {
             object = list.get(i);
+            if(object.toLowerCase().endsWith("jpg")){
             File tmpfile = new File(mpath, object);
             if (tmpfile.exists()) {
                 if (tmpfile.length() == getFileSize(object)) {
@@ -206,6 +207,7 @@ public class CloudTool extends ICWSBucketCallback.Stub {
                     downloadsize++;
                 }
 
+            }
             }
 
 
