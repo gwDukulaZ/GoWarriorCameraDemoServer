@@ -40,6 +40,7 @@ public class PeripheralModel {
     public void directStop(){
         // Stop the PWM devices
         if( pwm != null){
+            //gpio.output(pwdPin, 0);
             pwm.stop();
             pwm = null;
         }
@@ -71,23 +72,33 @@ public class PeripheralModel {
             dutyCycle = 5.0f; // theoretical  value is 10%, adjust to generate the requested signal;
         */
 
-        if( -90 == degree )
-            dutyCycle = 0.1f; //1.0f; // theoretical  value is 5%, adjust to generate the requested signal;
-        else if( 0 == degree )
-            dutyCycle = 7.5f; // theoretical  value is 7.5%, adjust to generate the requested signal;
-        else if( 90 == degree )
-            dutyCycle = 20.0f; // theoretical  value is 10%, adjust to generate the requested signal;
 
-        /*
-        dutyCycle = 2.0f;
-        freq = 50.0f;
-        pwm.ChangeFrequency( freq );
-        */
+//        if( -90 == degree )
+//            dutyCycle = 6.5f; //5.0f; //1.0f; // theoretical  value is 5%, adjust to generate the requested signal;
+//        else if( 0 == degree )
+//            dutyCycle = 7.5f; // theoretical  value is 7.5%, adjust to generate the requested signal;
+//        else if( 90 == degree )
+//            dutyCycle = 11.5f; //20.0f; // theoretical  value is 10%, adjust to generate the requested signal;
+
+
+
+        if( degree < -90 )
+            degree = -90;
+        else if(degree > 90)
+            degree = 90;
+
+        //dutyCycle = 7.5f + (degree * 2.5f)/90;
+        //dutyCycle = 8.5f + (degree * 4.5f)/90;
+        if( degree <= 0 )
+            dutyCycle = 8.0f + (degree * 3.5f)/90;
+        else
+            dutyCycle = 8.0f + (degree * 5.0f)/90; //dutyCycle = 7.5f + (degree * 6.0f)/90;
+
 
         float period = 1000.0f/freq; //ms
-        Log.d(LOG_TAG, " dutyCycle = " + dutyCycle
-                + ", freq = " + (1000.0f / period)
-                + ", period = " + period + "ms");
+//        Log.d(LOG_TAG, " dutyCycle = " + dutyCycle
+//                + ", freq = " + (1000.0f / period)
+//                + ", period = " + period + "ms");
 
         pwm.ChangeDutyCycle(dutyCycle);
         //pwm.ChangeFrequency( freq );

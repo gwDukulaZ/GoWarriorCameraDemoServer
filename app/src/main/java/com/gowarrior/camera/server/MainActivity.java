@@ -126,6 +126,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private Handler mSnapshotHandle = null;
     private boolean allReady = false;
     private CWSPipeClient mCWSPipeClient;
+    private boolean mUserKey1Run = false;
+    private boolean mUserKey2Run = false;
 
     private Mat mRgba;
     private Mat mGray;
@@ -364,10 +366,9 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                 int mCurrentState = GPIO_LOW;
                 GPIO gpio = new GPIO();
                 gpio.setmode(GPIO.BCM);
+
                 gpio.setup(mSensorGPIO, GPIO.INPUT);
-
                 mCurrentState = gpio.input(mSensorGPIO);
-
                 if (GPIO_HIGH == mCurrentState && mSensorLastState != mCurrentState) {
                     Log.i(TAG, "PIR detected");
                     if (null != myCameraPreview) {
@@ -523,18 +524,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int degree = 90; //-90,Left turn; 0, Middle; 90, Right turn
-                degree = 90;
-                for (int i = 0; i < 10; i++) {
-                    pwmDev.directStart();
-                    pwmDev.directControl(degree);
+                int degree = -90; //-90,Left turn; 0, Middle; 90, Right turn
+                mUserKey1Run = true;
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pwmDev.directStop();
+                Log.d(TAG, " from -50 to 90");
+
+                pwmDev.directStart();
+                for( degree = -50; degree <= 90; degree+=10 ){
+                    pwmDev.directControl(degree);
 
                     try {
                         Thread.sleep(200);
@@ -542,30 +539,68 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                         e.printStackTrace();
                     }
                 }
+                pwmDev.directStop();
+                mUserKey1Run = false;
 
-//                replyRemoter("alarm done");
+//                int degree = 90; //-90,Left turn; 0, Middle; 90, Right turn
+//                for( int i = 0; i < 10; i++ ){
+//                    pwmDev.directStart();
+//                    pwmDev.directControl(degree);
+//
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    pwmDev.directStop();
+//
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                degree = -90; //-90,Left turn; 0, Middle; 90, Right turn
+//                for( int i = 0; i < 10; i++ ){
+//                    pwmDev.directStart();
+//                    pwmDev.directControl(degree);
+//
+//                    try {
+//                        Thread.sleep(10);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    pwmDev.directStop();
+//
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
         }).start();
-
-        pwmDev.directStop();
     }
 
-    private void UserKey2Action() {
+    private void UserKey2Action() { // in middle, open door
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int degree = 90; //-90,Left turn; 0, Middle; 90, Right turn
-                degree = -90;
-                for (int i = 0; i < 10; i++) {
-                    pwmDev.directStart();
-                    pwmDev.directControl(degree);
+                mUserKey2Run = true;
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pwmDev.directStop();
+                Log.d(TAG, " from 90 to -40");
+
+                pwmDev.directStart();
+                for( degree = 90; degree >= -40; degree-=10 ){
+                    pwmDev.directControl(degree);
 
                     try {
                         Thread.sleep(200);
@@ -573,30 +608,21 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                         e.printStackTrace();
                     }
                 }
-
-//                replyRemoter("alarm done");
+                pwmDev.directStop();
+                mUserKey2Run = false;
             }
         }).start();
-
-        pwmDev.directStop();
     }
 
-    private void testPWM() {
+    private void testPWM() { // open door then close it
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int degree = 90; //-90,Left turn; 0, Middle; 90, Right turn
-                degree = 90;
-                for (int i = 0; i < 10; i++) {
-                    pwmDev.directStart();
-                    pwmDev.directControl(degree);
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pwmDev.directStop();
+                pwmDev.directStart();
+                for( degree = 90; degree >= -40; degree-=10 ){
+                    pwmDev.directControl(degree);
 
                     try {
                         Thread.sleep(200);
@@ -604,24 +630,17 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                         e.printStackTrace();
                     }
                 }
+                pwmDev.directStop();
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                degree = -90;
-                for (int i = 0; i < 10; i++) {
-                    pwmDev.directStart();
+                pwmDev.directStart();
+                for( degree = -50; degree <= 90; degree+=10 ){
                     pwmDev.directControl(degree);
-
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pwmDev.directStop();
 
                     try {
                         Thread.sleep(200);
@@ -629,12 +648,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                         e.printStackTrace();
                     }
                 }
+                pwmDev.directStop();
 
                 replyRemoter("alarm done");
             }
         }).start();
 
-        pwmDev.directStop();
     }
 
     private void testLed() {
@@ -1018,10 +1037,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                             testLed();
                             break;
                         case Constants.Snapshot_UserKey1:
-                            UserKey1Action();
+                            if (!mUserKey1Run) {
+                                UserKey1Action();
+                            }
                             break;
                         case Constants.Snapshot_UserKey2:
-                            UserKey2Action();
+                            if (!mUserKey2Run) {
+                                UserKey2Action();
+                            }
                             break;
                         case Constants.Snapshot_RemoteConnect:
                             Log.v(TAG, "do remote server connect");
