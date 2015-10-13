@@ -85,11 +85,14 @@ public class TransferView extends LinearLayout  {
         Log.d(TAG,"!!!!!!!the status is "+ status);
 
         if (status != null) {
+            mText.setEnabled(true);
+            mProgress.setEnabled(true);
             int progress = 0;
+            mText.setText(mModel.getFileName());
             if (status.equals("IN_PROGRESS")) {
                 progress = mModel.getProgress();
 
-                mText.setText(mModel.getFileName());
+
                 mProgress.setProgress(progress);
 
             } else if (status.equals("COMPLETE")) {
@@ -129,6 +132,9 @@ public class TransferView extends LinearLayout  {
 
 
             }
+        }else {
+            mText.setEnabled(false);
+            mProgress.setEnabled(false);
         }
 
 
