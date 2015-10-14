@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 
+import com.gowarrior.camera.server.models.DownloadModel;
 import com.gowarrior.camera.server.models.UploadModel;
 
 import org.opencv.android.CameraBridgeViewBase;
@@ -573,14 +574,9 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
                             Log.v(TAG, "Now to upload file: " + newfile.toString());
                             Uri fileUri = Uri.fromFile(newfile);
 
-
-
                             //jerry upload
-
                             //int id = MainActivity.cloudTool.uploadFile(fileUri);
                             upload(fileUri);
-
-
 
                             if (mHandle != null) {
                                 Message msg = mHandle.obtainMessage(Constants.Snapshot_UploadStart, 0, 0, mvPath);
@@ -604,7 +600,6 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
             isPreviewing = true;
         }
     };
-
 
     public File createImageFile(String surfix) throws IOException {
         // Create an image file name
@@ -650,12 +645,13 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
         bPhotoUpload = bUpload;
     }
 
-
     public void upload(Uri uri) {
         UploadModel model = new UploadModel(getContext(), uri);
         if(null != mExecutorService)
             mExecutorService.execute(model.getUploadRunnable());
-
+    }
+    public void download(Uri uri) {
+        DownloadModel model = new DownloadModel(getContext(), uri);
     }
 }
 

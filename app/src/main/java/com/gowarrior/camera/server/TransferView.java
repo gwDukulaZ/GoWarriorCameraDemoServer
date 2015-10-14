@@ -34,7 +34,6 @@ import com.gowarrior.camera.server.models.DownloadModel;
 import com.gowarrior.camera.server.models.TransferModel;
 import com.gowarrior.camera.server.models.UploadModel;
 
-
 /*
  * This view handles user interaction with a single transfer, such as giving the
  * option to pause and abort, and also showing the user the progress of the transfer.
@@ -55,22 +54,15 @@ public class TransferView extends LinearLayout  {
                 com.gowarrior.camera.server.R.layout.transfer_view,
                 this,
                 true);
-
         mContext = context;
         mModel = model;
-
         mText = ((TextView) findViewById(com.gowarrior.camera.server.R.id.text));
-
         mProgress = ((ProgressBar) findViewById(com.gowarrior.camera.server.R.id.progress));
-
-
-
-
 
         refresh();
     }
 
-    public void setHandle(Handler hd) {mHandle = hd;};
+    public void setHandle(Handler hd) {mHandle = hd;}
 
     /* refresh method for public use */
     public void refresh() {
@@ -91,15 +83,9 @@ public class TransferView extends LinearLayout  {
             mText.setText(mModel.getFileName());
             if (status.equals("IN_PROGRESS")) {
                 progress = mModel.getProgress();
-
-
                 mProgress.setProgress(progress);
-
             } else if (status.equals("COMPLETE")) {
                 progress = 100;
-
-
-
 
                 if (mModel instanceof DownloadModel) {
                     // if download completed, show option to open file
@@ -129,15 +115,11 @@ public class TransferView extends LinearLayout  {
                 }
                 mText.setText(mModel.getFileName());
                 mProgress.setProgress(progress);
-
-
             }
         }else {
-            mText.setEnabled(false);
-            mProgress.setEnabled(false);
+//            mText.setEnabled(false);
+//            mProgress.setEnabled(false);
         }
-
-
     }
 
     private void viewIt() {
@@ -156,13 +138,4 @@ public class TransferView extends LinearLayout  {
             Toast.makeText(mContext, R.string.nothing_found_to_open_file, Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
-
-
-
-
 }

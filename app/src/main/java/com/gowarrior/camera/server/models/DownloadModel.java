@@ -18,6 +18,8 @@ package com.gowarrior.camera.server.models;
 import android.content.Context;
 import android.net.Uri;
 
+import com.gowarrior.camera.server.Util;
+
 /*
  * Class that encapsulates downloads, handling all the interaction with the
  * underlying Download and TransferManager
@@ -30,31 +32,22 @@ public class DownloadModel extends TransferModel {
     private int mPrecent;
     private Uri mUri;
 
-
     public DownloadModel(Context context, Uri uri) {
         super(context, uri);
         mUri = uri;
-
+        mFileName = Util.getFileName(mUri.getPath());
+        mStatus = "START";
+        mPrecent = 0;
     }
-
-    public void download() {
-
-    }
-
-
-    @Override
-    public void onProgress(String filename, String state, int percent) {
-        mStatus = state;
-        mFileName = filename;
-        mPrecent = percent;
-
-
-    }
-
 
     @Override
     public String getFileName() {
         return mFileName;
+    }
+
+    @Override
+    public String getType() {
+        return "download";
     }
 
     @Override
@@ -63,8 +56,18 @@ public class DownloadModel extends TransferModel {
     }
 
     @Override
+    public void setStatus(String status) {
+        mStatus = status;
+    }
+
+    @Override
     public int getProgress() {
         return mPrecent;
+    }
+
+    @Override
+    public void setProgress(int progress) {
+        mPrecent = progress;
     }
 
     @Override

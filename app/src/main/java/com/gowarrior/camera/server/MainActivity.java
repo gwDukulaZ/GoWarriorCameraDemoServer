@@ -153,11 +153,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public static CloudTool cloudTool;
     private ICWSBucketAidlInterface myBucket;
 
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -177,13 +172,9 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         setContentView(com.gowarrior.camera.server.R.layout.activity_main);
 
-
         cloudServiceBind();
 
-
-
         pwmDev = new PeripheralModel();
-
         mLayout = (LinearLayout) findViewById(com.gowarrior.camera.server.R.id.transfers_layout);
 
         /* init camera preview */
@@ -340,7 +331,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         // make timer that will refresh all the transfer views
         mTimer = new Timer();
 
-
         //TODO
         TimerTask task = new TimerTask() {
             @Override
@@ -432,7 +422,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             }
         };
         mTimer.schedule(mAutoSnapShotTask, 0, AUTOSNAPSHOT_DELAY);
-
 
         new TakeSnapshot().start();
 
@@ -728,8 +717,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             public void pipeDeliveryComplete(ICWSDeliveryToken token) {
                 Log.d(TAG, "deliveryComplete, token=" + token.toString());
             }
-
-
         };
 
         mCWSPipeClient.setCallback(cb);
@@ -793,9 +780,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mCWSPipeClient.close();
         //TODO
         cloudTool.cloudServiceFinish();
-
-
-
     }
 
     @Override
@@ -821,7 +805,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         /* clear camera */
         if (myCameraPreview != null)
             myCameraPreview.disableView();
-
     }
 
     @Override
@@ -939,17 +922,11 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             }
             // add the transfers we haven't seen yet
             for (int i = mModels.length; i < models.length; i++) {
-                mLayout.addView(new TransferView(this, models[i]), 0);
+                mLayout.addView(new TransferView(this, TransferModel.getTransferModel(i + 1)), 0);
             }
             mModels = models;
         }
-
     }
-
-
-
-
-
 
     class TakeSnapshot extends Thread {
         private Message lastsnapshotmsg = null;
@@ -1112,13 +1089,57 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
     }
 
+    public int downloadFile(String path) {
+        int downloadsize = 0;
+
+        int id;
+        String mpath;
+        String object;
+        //path
+        if (null == path)
+            //default download path
+            mpath = Util.getDownloadPath();
+        else
+            mpath = path;
+
+        //file
+        List<String> list = cloudTool.getCloudFileList();
+
+        for (int i = 0; i < list.size(); i++) {
+            object = list.get(i);
+            if(object.toLowerCase().endsWith("jpg")){
+                File tmpfile = new File(mpath, object);
+                if (tmpfile.exists()) {
+                    if (tmpfile.length() == cloudTool.getFileSize(object)) {
+                        continue;
+                    } else {
+                        id = cloudTool.downloadFile(object, mpath);
+                        if (id > -1) {
+                            myCameraPreview.download(Uri.fromFile(tmpfile));
+                            downloadsize++;
+                        }
+                    }
+
+                } else {
+                    id = cloudTool.downloadFile(object, mpath);
+                    if (id > -1) {
+                        myCameraPreview.download(Uri.fromFile(tmpfile));
+                        downloadsize++;
+                    }
+                }
+            }
+        }
+
+        return downloadsize;
+    }
+
     private class AutoDownload extends AsyncTask<Object, Void, Integer> {
 
         @Override
         protected Integer doInBackground(Object... params) {
             //TODO
-           // return downloadFile(Constants.DOWNLOAD_TO)
-            return  cloudTool.downloadFile(null);
+            return downloadFile(Constants.DOWNLOAD_TO);
+//            return  cloudTool.downloadFile(null);
         }
 
         @Override
@@ -1143,8 +1164,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         pubPipeTopic(msg);
     }
 
-
-
     private ServiceConnection bucketSC = new ServiceConnection() {
 
         @Override
@@ -1156,11 +1175,11 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             cloudTool.setCloudService(myBucket);
 
             int i =cloudTool.cloudServiceInit();
+            cloudTool.setListener(TransferModel.mCloudToolListener);
             Log.d(TAG,"the value of i is "+ i);
             if (i > 0){
                 allReady = true;
             }
-
         }
 
         @Override

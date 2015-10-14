@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.gowarrior.camera.server.MainActivity;
+import com.gowarrior.camera.server.Util;
 
 /* UploadModel handles the interaction between the Upload and TransferManager.
  * This also makes sure that the file that is uploaded has the same file extension
@@ -42,8 +43,11 @@ public class UploadModel extends TransferModel {
     public UploadModel(Context context, Uri uri) {
         super(context, uri);
         mUri = uri;
-        Log.d(TAG,"the upload uri is "+ mUri.toString());
-
+        Log.d(TAG, "the upload uri is " + mUri.toString());
+        mFileName = Util.getFileName(mUri.getPath());
+        Log.d(TAG, "the upload mFileName is " + mFileName);
+        mStatus = "START";
+        mPrecent = 0;
     }
 
     @Override
@@ -52,8 +56,18 @@ public class UploadModel extends TransferModel {
     }
 
     @Override
+    public String getType() {
+        return "upload";
+    }
+
+    @Override
     public String getStatus() {
         return mStatus;
+    }
+
+    @Override
+    public void setStatus(String status) {
+        mStatus = status;
     }
 
     @Override
@@ -62,10 +76,14 @@ public class UploadModel extends TransferModel {
     }
 
     @Override
+    public void setProgress(int progress) {
+        mPrecent = progress;
+    }
+
+    @Override
     public Uri getUri() {
         return mUri;
     }
-
 
     public Runnable getUploadRunnable() {
         return new Runnable() {
@@ -76,40 +94,13 @@ public class UploadModel extends TransferModel {
         };
     }
 
-
-
-
-
-
     public void upload() {
-
-
-
-
-                try {
-
-
-                    MainActivity.cloudTool.uploadFile(getUri());
-
-                } catch (Exception e) {
-                    Log.e(TAG, "Iwrong", e);
-                }
-
-
-
-
+        try {
+            MainActivity.cloudTool.uploadFile(getUri());
+        } catch (Exception e) {
+            Log.e(TAG, "Iwrong", e);
+        }
     }
-
-    @Override
-    public void onProgress(String filename, String state, int percent) {
-
-        mStatus = state;
-        mFileName = filename;
-        mPrecent = percent;
-    }
-
-
-
 }
 
 
