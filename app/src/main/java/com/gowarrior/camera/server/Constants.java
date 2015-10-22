@@ -18,14 +18,6 @@ package com.gowarrior.camera.server;
 import android.os.Environment;
 
 public class Constants {
-
-
-
-
-
-
-
-
     public static final String UPLOAD_FROM = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/webcam";
     public static final String DOWNLOAD_TO = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/snapshot";
 

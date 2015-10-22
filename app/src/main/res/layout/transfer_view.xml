@@ -6,20 +6,26 @@
     <TextView android:id="@+id/text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_weight="10"
         android:layout_gravity="center_vertical" />
     <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
         android:id="@+id/progress"
         android:layout_width="0dp"
-        android:layout_height="@dimen/transfer_row_height"
+        android:layout_height="@dimen/transfer_progress_height"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:layout_gravity="center_vertical" />
-    <Button android:id="@+id/open"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:orientation="horizontal" >
+        <Button android:id="@+id/open"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/transfer_row_height"
             android:visibility="gone"
-            android:text="@string/open" />
-
+            android:text="@string/open"
+            android:textSize="12dp" />
+    </LinearLayout>
 </merge>

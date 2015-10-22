@@ -605,7 +605,7 @@ public class MyPreview extends CameraBridgeViewBase implements Camera.PreviewCal
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         Log.i(TAG, "Time Stamp " + timeStamp + "!!\n");
-        String imageFilePath = Constants.UPLOAD_FROM + "/new/" + timeStamp + "_" + surfix + ".jpg";
+        String imageFilePath = Constants.UPLOAD_FROM + "/new/" + timeStamp + "_" + surfix + "-snap.jpg";
 //        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File image = new File(imageFilePath);
 

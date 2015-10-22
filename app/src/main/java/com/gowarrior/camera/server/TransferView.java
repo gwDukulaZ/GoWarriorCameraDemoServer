@@ -74,13 +74,13 @@ public class TransferView extends LinearLayout  {
      * quickly when the user selects something
      */
     private void refresh(String status) {
-        Log.d(TAG,"!!!!!!!the status is "+ status);
+//        Log.d(TAG,"!!!!!!!the status is "+ status);
 
         if (status != null) {
             mText.setEnabled(true);
             mProgress.setEnabled(true);
             int progress = 0;
-            mText.setText(mModel.getFileName());
+            mText.setText(((mModel instanceof DownloadModel)?"↓":((mModel instanceof UploadModel)?"↑":"?"))+mModel.getFileName());
             if (status.equals("IN_PROGRESS")) {
                 progress = mModel.getProgress();
                 mProgress.setProgress(progress);
@@ -113,7 +113,7 @@ public class TransferView extends LinearLayout  {
                         }
                     }
                 }
-                mText.setText(mModel.getFileName());
+//                mText.setText(mModel.getFileName());
                 mProgress.setProgress(progress);
             }
         }else {

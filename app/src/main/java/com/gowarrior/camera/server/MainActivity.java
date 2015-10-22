@@ -99,6 +99,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     private boolean bdeleteobj = false;
     private int objnum = 0;
+    private int totalnum = 30;
     private int lastdeleteidx = 0;
     private boolean deletetaskrun = false;
     private int delnumatime = 0;
@@ -1072,14 +1073,29 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         @Override
         protected Boolean doInBackground(Object... params) {
-//            int delnum = delnumatime;
-//            delnumatime = 0;
-//            if (!bdeleteobj || (objnum - lastdeleteidx) < 5) {
-//
-//            } else {
-//                deleteoldobjects(delnum);
-//            }
-//
+            String object;
+            int num = 0;
+
+            //check and delete old snapshots
+            List<String> list = cloudTool.getCloudFileList();
+            num = list.size();
+            Log.v(TAG,"now " + num + " snapshots,number limit "+ totalnum);
+            if (num > totalnum) {
+                num -= totalnum;
+                Log.v(TAG,"need delete " + num + " files since number limit "+ totalnum);
+                for (int i = 0; i < list.size(); i++) {
+                    object = list.get(i);
+                    if (object.endsWith("-snap.jpg")) {
+                        Log.v(TAG, "now delete "+ object);
+                        cloudTool.deleteFile(object);
+                        num--;
+                        if (num <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+
             return true;
         }
 
@@ -1107,25 +1123,24 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
         for (int i = 0; i < list.size(); i++) {
             object = list.get(i);
-            if(object.toLowerCase().endsWith("jpg")){
-                File tmpfile = new File(mpath, object);
-                if (tmpfile.exists()) {
-                    if (tmpfile.length() == cloudTool.getFileSize(object)) {
-                        continue;
-                    } else {
-                        id = cloudTool.downloadFile(object, mpath);
-                        if (id > -1) {
-                            myCameraPreview.download(Uri.fromFile(tmpfile));
-                            downloadsize++;
-                        }
-                    }
-
+            Log.v(TAG,"download file check: "+object);
+            File tmpfile = new File(mpath, object);
+            if (tmpfile.exists()) {
+                if (tmpfile.length() == cloudTool.getFileSize(object)) {
+                    continue;
                 } else {
                     id = cloudTool.downloadFile(object, mpath);
                     if (id > -1) {
                         myCameraPreview.download(Uri.fromFile(tmpfile));
                         downloadsize++;
                     }
+                }
+
+            } else {
+                id = cloudTool.downloadFile(object, mpath);
+                if (id > -1) {
+                    myCameraPreview.download(Uri.fromFile(tmpfile));
+                    downloadsize++;
                 }
             }
         }
