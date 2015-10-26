@@ -150,7 +150,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private boolean connected = false;
     private Date lastConnectTime;
 
-
     public static CloudTool cloudTool;
     private ICWSBucketAidlInterface myBucket;
 
@@ -212,6 +211,13 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             mRefreshButton.setText(R.string.enablephotoupload);
         }
         myCameraPreview.setPhotoUpload(mPhotoUpload);
+
+        if (!allReady) {
+            mRefreshButton = (Button) findViewById(R.id.autodownload);
+            mRefreshButton.setEnabled(false);
+            mRefreshButton = (Button) findViewById(R.id.snapshot);
+            mRefreshButton.setEnabled(false);
+        }
 
         findViewById(R.id.autodownload).setOnClickListener(new OnClickListener() {
             @Override
@@ -781,6 +787,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mCWSPipeClient.close();
         //TODO
         cloudTool.cloudServiceFinish();
+        cloudServiceUnbind();
     }
 
     @Override
@@ -1194,12 +1201,20 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             Log.d(TAG,"the value of i is "+ i);
             if (i > 0){
                 allReady = true;
+                Button mRefreshButton = (Button) findViewById(R.id.autodownload);
+                mRefreshButton.setEnabled(true);
+                mRefreshButton = (Button) findViewById(R.id.snapshot);
+                mRefreshButton.setEnabled(true);
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Button mRefreshButton = (Button) findViewById(R.id.autodownload);
+            mRefreshButton.setEnabled(false);
+            mRefreshButton = (Button) findViewById(R.id.snapshot);
+            mRefreshButton.setEnabled(false);
+            allReady = false;
             cloudTool.cloudServiceFinish();
             Log.d(TAG, "onServiceDisconnected");
         }
